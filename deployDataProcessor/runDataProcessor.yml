@@ -1,0 +1,6 @@
+---
+- hosts: all
+  user: ubuntu
+  tasks:
+    - name: Start runDataProcessor
+      command: chdir=/home/ubuntu/dataProcessor ./runDataProcessor.sh

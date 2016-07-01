@@ -1,0 +1,8 @@
+First do this ""import nltk"" then type below command
+nltk.download('wordnet')
+nltk.download('stopwords')
+nltk.download('words')
+
+pip install json
+
+

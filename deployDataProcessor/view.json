@@ -1,0 +1,1 @@
+{"language":"javascript","views":{"familyView":{"map":"function(doc) {\n  emit(doc,1);\n}"}}}

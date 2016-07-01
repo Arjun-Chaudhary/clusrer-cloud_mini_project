@@ -1,0 +1,27 @@
+---
+- hosts: all
+  user: ubuntu
+  sudo: yes
+  tasks:
+    - name: Create folder for couchDB
+      file: path=/mnt/couchDb state=directory mode=0777
+    - name: Create folder for couchDB databases folder
+      file: path=/mnt/couchDb/databases state=directory mode=0777
+    - name: Create folder for couchDB view folder
+      file: path=/mnt/couchDb/view state=directory mode=0777
+    - name: Install couchDB
+      apt: pkg=couchdb state=present update_cache=true
+    - name: Install Python pip
+      apt: pkg=python-pip state=present update_cache=true
+    - name: Install curl
+      apt: pkg=curl state=present update_cache=true
+    - name: Copy local.ini file
+      command: cp /home/ubuntu/local.ini /etc/couchdb/
+    - name: Install Python httplib2 package
+      pip: name=httplib2
+    - name: stop couchDB
+      command: stop couchdb
+    - name: start couchDB
+      command: start couchdb
+    - name: Add couchDB Admin User Umer
+      command: python /home/ubuntu/couchDBAddUser.py

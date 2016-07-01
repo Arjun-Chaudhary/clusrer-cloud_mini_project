@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <title>Team - Melbourne</title>
+	 <script src="build/react.js"></script>
+     <script src="build/react-dom.js"></script>
+	 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	 <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	 <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+	 <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<?php
+$couch_dsn = "http://115.146.89.216:5984";
+$couch_db = "food";
+$stories = "melbourne_part2";
+$income = "individual_income";
+$family = "family_data";
+
+require_once "lib/couch.php";
+require_once "lib/couchClient.php";
+require_once "lib/couchDocument.php";
+
+//Create client connections to each database
+$client = new couchClient($couch_dsn,$couch_db);
+
+$storiesDB = new couchClient($couch_dsn,$stories);
+
+$incomeDB = new couchClient($couch_dsn,$income);
+
+$familyDB = new couchClient($couch_dsn,$family);
+
+$view = $client->getView("filtereddata","hasCoordinates");
+
+$data = json_encode((array)$view);
+
+
+//$story1view = $client2->getView("hasCoordinate","hasCoordinate");
+//$story1JSON = json_encode((array)$story1view);
+$story2view = $storiesDB->getView("hasCoordinate","story2");
+$story2JSON = json_encode((array)$story2view);
+$story3view = $storiesDB->getView("hasCoordinate","story3");
+$story3JSON = json_encode((array)$story3view);
+$incomeView = $incomeDB->getView("view","incomeData");
+$incomeJSON = json_encode((array)$incomeView);
+$familyView = $familyDB->getView("view","familyView");
+$familyJSON = json_encode((array)$familyView);
+
+?>  
+  <div id="header">
+     <h2>Team Melbourne</h2>
+  </div>
+  <div id="side_menu">
+    <table class="side_options">
+     <tr>
+	    <th><h3>Map Views</h3></th>
+     </tr>
+	 <tr><td>
+	 <ul>
+       <li><a class="income" id="income">Income Zones</a></li>
+       <li><a class="tweets" id="tweets">Tweets</a></li>
+     </ul></td>
+     </tr>	
+     <tr>
+	    <th><h3>Scenarios</h3></th>
+     </tr>
+     <tr>
+	    <td><select name="" onchange="loadScenarioData(this.value)">
+		       <option value="">Select</option>
+		       <option value="1">Scenario 1</option>
+			   <option value="2">Scenario 2</option>
+			   <option value="3">Scenario 3</option>
+			</select>
+		</td>
+     </tr>	 
+	</table>
+  </div>
+     <div id="mapid"></div>
+	 <script type="text/javascript">
+	    var viewIncome = false;
+		var viewTweets = false;
+		var tweetsMarkers = new Array();
+	    var mymap = L.map('mapid').setView([-37.82937, 144.9433], 12);
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+          maxZoom: 16,
+          id: 'mapbox.streets',
+          accessToken: 'pk.eyJ1IjoibHVwaXlhbXVqYWxhIiwiYSI6ImNpbmIwM2RncTBqYWh2Z2t2ZjJ6aW9pcDIifQ.ENiXmfUqBt-rE_-z80RB8w'
+        }).addTo(mymap);
+	
+        mymap.on('click', onMapClick);
+		
+		function loadScenarioData(num){
+		    var scenario = null;
+			//Remove any existing tweets
+			mymap.removeLayer(tweetsMarkers);
+			if(num==2){
+			   scenario = <?php echo $story2JSON;?>;
+			}else if(num==3){
+			   scenario = <?php echo $story3JSON;?>;
+			}
+			loadTweets(scenario);
+		}
+		
+		function loadTweets(scenario){
+		    for (var i = 0; i < obj.rows.length; i++) {
+				var document = obj.rows[i];
+				var tweet = document.key;
+				var lat = tweet.coordinates.coordinates[0];
+                var lon = tweet.coordinates.coordinates[1];
+				var colorTweet = 'blue';
+				if(tweet.polarity_final_score==-1){
+					colorTweet = 'red';
+				}else if(tweet.polarity_final_score==1){
+					colorTweet = 'green';
+				}
+                var tweet = L.circle([lon, lat], 50, {
+                    color: colorTweet,
+                    fillColor: '#f03',
+                    fillOpacity: 0.1
+                  }).addTo(mymap).bindPopup("Tweet: "+tweet.text);
+				  tweetsMarkers.push(tweet);
+             }
+		}
+	 </script>
+</body>
+</html>

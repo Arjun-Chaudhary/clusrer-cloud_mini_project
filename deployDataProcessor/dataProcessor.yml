@@ -1,0 +1,36 @@
+#CCC2016-1, Melbourne, ARJUN CHAUDHARY, 727553
+#CCC2016-1, Melbourne, HARSHIT KAPOOR, 666810
+#CCC2016-1, Melbourne, LUPIYA MUJALA, 610273
+#CCC2016-1, Melbourne, Templeton Tsai, 723957
+#CCC2016-1, Melbourne, MUHAMMAD UMER ALTAF, 778566
+---
+- hosts: all
+  user: ubuntu
+  sudo: yes
+  tasks:
+    - name: Install python3-pip
+      apt: pkg=python3-pip state=present update_cache=true
+    - name: Install libblas-dev
+      apt: pkg=libblas-dev state=present update_cache=true
+    - name: Install liblapack-dev
+      apt: pkg=liblapack-dev state=present update_cache=true
+    - name: Install libatlas-base-dev
+      apt: pkg=libatlas-base-dev state=present update_cache=true
+    - name: Install gfortran
+      apt: pkg=gfortran state=present update_cache=true
+ 
+    - name: Install Python nltk package
+      pip: name=nltk executable=pip3
+    - name: Install Python tweepy package
+      pip: name=tweepy executable=pip3
+    - name: Install Python couchdb package
+      pip: name=couchdb executable=pip3
+    - name: Install Python jsonpickle package
+      pip: name=jsonpickle executable=pip3
+    - name: Install Python gensim package
+      pip: name=gensim executable=pip3
+    
+    - unarchive: src=/home/ubuntu/nltk_data/models/word2vec_sample/pruned.word2vec.tar.gz
+                 dest=/home/ubuntu/nltk_data/models/word2vec_sample
+                 copy=no
+   

@@ -1,0 +1,25 @@
+#CCC2016-1, Melbourne, ARJUN CHAUDHARY, 727553
+#CCC2016-1, Melbourne, HARSHIT KAPOOR, 666810
+#CCC2016-1, Melbourne, LUPIYA MUJALA, 610273
+#CCC2016-1, Melbourne, Templeton Tsai, 723957
+#CCC2016-1, Melbourne, MUHAMMAD UMER ALTAF, 778566
+---
+- hosts: all
+  user: ubuntu
+  sudo: yes
+  tasks:
+    - name: Installs apache web server
+      apt: pkg=apache2 state=present update_cache=true
+    - name: Installs php
+      apt: pkg=php5 state=present update_cache=true
+    - name: Copying file from web_app to /var/www/html
+      command: cp -rf /home/ubuntu/web_app /var/www/html
+    - name: Copying file from php.ini to /etc/php5/cli/
+      command: cp -rf /home/ubuntu/web_app/php.ini.cli /etc/php5/cli/php.ini
+    - name: Copying file from php.ini to /etc/php5/apache2
+      command: cp -rf /home/ubuntu/web_app/php.ini.apache /etc/php5/apache2/php.ini
+    - name: Restart apache2
+      command: /etc/init.d/apache2 restart
+    - name: Restart apache2 ctl
+      command: apache2ctl restart
+
